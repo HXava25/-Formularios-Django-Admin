@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block title %}Solicitud #{{ solicitud.pk }}{% endblock %}
+{% block content %}
+<section class="detail-page" data-reveal>
+  <a class="back-link" href="{% url 'dashboard' %}">← Volver a solicitudes</a>
+  <div class="detail-header">
+    <div>
+      <p class="eyebrow">Solicitud #{{ solicitud.pk }} · {{ solicitud.creado_en|date:"j M Y, H:i" }}</p>
+      <h1>{{ solicitud.asunto }}</h1>
+    </div>
+    <span class="status status-{{ solicitud.estado }}">{{ solicitud.get_estado_display }}</span>
+  </div>
+  <div class="detail-layout">
+    <article class="detail-content">
+      <div class="detail-meta">
+        <div><span>Categoría</span><strong>{{ solicitud.get_categoria_display }}</strong></div>
+        <div><span>Prioridad</span><strong class="priority-text-{{ solicitud.prioridad }}">{{ solicitud.get_prioridad_display }}</strong></div>
+        {% if user.is_staff %}<div><span>Solicitante</span><strong>{{ solicitud.solicitante.get_full_name|default:solicitud.solicitante.username }}</strong></div>{% endif %}
+      </div>
+      <div class="description-block">
+        <h2>Descripción</h2>
+        <p>{{ solicitud.descripcion|linebreaksbr }}</p>
+      </div>
+      <div class="timeline">
+        <span class="timeline-dot"></span>
+        <div><strong>Solicitud recibida</strong><span>{{ solicitud.creado_en|date:"j M Y, H:i" }}</span></div>
+      </div>
+      {% if solicitud.resuelta_en %}
+        <div class="timeline">
+          <span class="timeline-dot timeline-done"></span>
+          <div><strong>Solicitud resuelta</strong><span>{{ solicitud.resuelta_en|date:"j M Y, H:i" }}</span></div>
+        </div>
+      {% endif %}
+    </article>
+    {% if perms.solicitudes.manage_solicitudes %}
+      <aside class="operator-panel">
+        <p class="eyebrow">Gestión interna</p>
+        <h2>Actualizar estado</h2>
+        <form action="{% url 'solicitud_estado' solicitud.pk %}" method="post" class="form-stack">
+          {% csrf_token %}
+          {% for field in estado_form %}
+            <div class="field"><label for="{{ field.id_for_label }}">{{ field.label }}</label>{{ field }}{% if field.errors %}<div class="field-error">{{ field.errors }}</div>{% endif %}</div>
+          {% endfor %}
+          <button class="button button-dark button-wide" type="submit">Guardar estado</button>
+        </form>
+      </aside>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}

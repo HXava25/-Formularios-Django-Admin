@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+{% block title %}Solicitudes{% endblock %}
+{% block content %}
+<section class="dashboard-intro" data-reveal>
+  <div>
+    <p class="eyebrow">{% if es_operador %}Vista de equipo{% else %}Tu espacio{% endif %}</p>
+    <h1>{% if es_operador %}Todo en su lugar.{% else %}¿En qué podemos ayudarte?{% endif %}</h1>
+    <p class="intro-text">{% if es_operador %}Revisa las solicitudes y acompaña cada caso hasta su resolución.{% else %}Registra una solicitud y sigue su avance desde aquí.{% endif %}</p>
+  </div>
+  <a class="button button-dark" href="{% url 'solicitud_crear' %}">
+    <span aria-hidden="true">+</span> Nueva solicitud
+  </a>
+</section>
+
+<section class="stats-row" aria-label="Resumen de solicitudes" data-reveal>
+  <article class="stat-block"><span class="stat-label">En total</span><strong>{{ summary.total }}</strong><span class="stat-note">solicitudes registradas</span></article>
+  <article class="stat-block"><span class="stat-label">Abiertas</span><strong>{{ summary.abiertas }}</strong><span class="stat-note">pendientes de revisión</span></article>
+  <article class="stat-block"><span class="stat-label">En progreso</span><strong>{{ summary.en_progreso }}</strong><span class="stat-note">en atención</span></article>
+  <article class="stat-block"><span class="stat-label">Resueltas</span><strong>{{ summary.resueltas }}</strong><span class="stat-note">casos completados</span></article>
+</section>
+
+<section class="requests-section" data-reveal>
+  <div class="section-heading">
+    <div>
+      <p class="eyebrow">Seguimiento</p>
+      <h2>Solicitudes recientes</h2>
+    </div>
+    <span class="result-count">{{ solicitudes|length }} resultado{{ solicitudes|length|pluralize:"s" }}</span>
+  </div>
+  <form method="get" class="filter-bar" role="search">
+    <div class="search-field">
+      <label class="sr-only" for="{{ filtro.q.id_for_label }}">Buscar solicitudes</label>
+      {{ filtro.q }}
+    </div>
+    <div class="filter-field">
+      <label class="sr-only" for="{{ filtro.estado.id_for_label }}">Filtrar por estado</label>
+      {{ filtro.estado }}
+    </div>
+    <div class="filter-field">
+      <label class="sr-only" for="{{ filtro.categoria.id_for_label }}">Filtrar por categoría</label>
+      {{ filtro.categoria }}
+    </div>
+    <button class="button button-quiet" type="submit">Filtrar</button>
+    {% if request.GET %}<a class="clear-filter" href="{% url 'dashboard' %}">Limpiar</a>{% endif %}
+  </form>
+
+  {% if solicitudes %}
+    <div class="request-list">
+      {% for solicitud in solicitudes %}
+        <a class="request-row" href="{% url 'solicitud_detalle' solicitud.pk %}" data-reveal>
+          <div class="request-main">
+            <span class="request-subject">{{ solicitud.asunto }}</span>
+            <span class="request-meta">
+              <span>{{ solicitud.get_categoria_display }}</span>
+              <span aria-hidden="true">·</span>
+              {% if es_operador %}<span>{{ solicitud.solicitante.get_full_name|default:solicitud.solicitante.username }}</span><span aria-hidden="true">·</span>{% endif %}
+              <span>{{ solicitud.creado_en|date:"j M Y" }}</span>
+            </span>
+          </div>
+          <span class="priority priority-{{ solicitud.prioridad }}">{{ solicitud.get_prioridad_display }}</span>
+          <span class="status status-{{ solicitud.estado }}">{{ solicitud.get_estado_display }}</span>
+          <span class="row-arrow" aria-hidden="true">↗</span>
+        </a>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="empty-state">
+      <span class="empty-mark" aria-hidden="true">M</span>
+      <h3>{% if request.GET %}No encontramos coincidencias.{% else %}Todavía no hay solicitudes.{% endif %}</h3>
+      <p>{% if request.GET %}Prueba con otros términos o quita los filtros.{% else %}Cuando necesites ayuda, registra tu primer caso y lo encontrarás aquí.{% endif %}</p>
+      {% if not request.GET %}<a class="button button-dark" href="{% url 'solicitud_crear' %}">Crear primera solicitud</a>{% endif %}
+    </div>
+  {% endif %}
+</section>
+{% endblock %}

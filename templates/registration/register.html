@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}Crear cuenta{% endblock %}
+{% block content %}
+<section class="auth-layout" data-reveal>
+  <div class="auth-copy" data-reveal>
+    <p class="eyebrow">Empieza por aquí</p>
+    <h1>Todo tu soporte, en orden.</h1>
+    <p>Crea una cuenta para registrar solicitudes, seguir su avance y tener cada respuesta a mano.</p>
+  </div>
+  <div class="auth-panel" data-reveal>
+    <h2>Crear cuenta</h2>
+    <form method="post" class="form-stack">
+      {% csrf_token %}
+      {% if form.non_field_errors %}<div class="form-errors">{{ form.non_field_errors }}</div>{% endif %}
+      {% for field in form %}
+        <div class="field">
+          <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+          {{ field }}
+          {% if field.help_text %}<div class="field-help">{{ field.help_text|safe }}</div>{% endif %}
+          {% if field.errors %}<div class="field-error">{{ field.errors }}</div>{% endif %}
+        </div>
+      {% endfor %}
+      <button class="button button-dark button-wide" type="submit">Crear mi cuenta</button>
+    </form>
+    <p class="auth-switch">¿Ya tienes una cuenta? <a href="{% url 'login' %}">Ingresa</a></p>
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}Ingresar{% endblock %}
+{% block content %}
+<section class="auth-layout" data-reveal>
+  <div class="auth-copy" data-reveal>
+    <p class="eyebrow">Tu espacio de soporte</p>
+    <h1>Qué bueno verte.</h1>
+    <p>Ingresa para revisar tus solicitudes y continuar donde lo dejaste.</p>
+  </div>
+  <div class="auth-panel" data-reveal>
+    <h2>Iniciar sesión</h2>
+    <form method="post" class="form-stack">
+      {% csrf_token %}
+      {% if form.non_field_errors %}<div class="form-errors">{{ form.non_field_errors }}</div>{% endif %}
+      {{ form.as_p }}
+      {% if next %}<input type="hidden" name="next" value="{{ next }}">{% endif %}
+      <button class="button button-dark button-wide" type="submit">Ingresar a mi cuenta</button>
+    </form>
+    <p class="auth-switch">¿Aún no tienes cuenta? <a href="{% url 'registro' %}">Regístrate</a></p>
+  </div>
+</section>
+{% endblock %}

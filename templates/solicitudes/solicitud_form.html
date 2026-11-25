@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}Nueva solicitud{% endblock %}
+{% block content %}
+<section class="form-page" data-reveal>
+  <a class="back-link" href="{% url 'dashboard' %}">← Volver a solicitudes</a>
+  <div class="form-page-heading">
+    <p class="eyebrow">Nueva solicitud</p>
+    <h1>{{ titulo }}</h1>
+    <p>Incluye los detalles necesarios para que podamos ayudarte mejor.</p>
+  </div>
+  <form method="post" class="request-form">
+    {% csrf_token %}
+    {% if form.non_field_errors %}<div class="form-errors">{{ form.non_field_errors }}</div>{% endif %}
+    {% for field in form %}
+      <div class="field {% if field.name == 'descripcion' %}field-full{% endif %}">
+        <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+        {{ field }}
+        {% if field.help_text %}<div class="field-help">{{ field.help_text }}</div>{% endif %}
+        {% if field.errors %}<div class="field-error">{{ field.errors }}</div>{% endif %}
+      </div>
+    {% endfor %}
+    <div class="form-footer">
+      <p>Tu información se valida de forma segura antes de guardarse.</p>
+      <button class="button button-dark" type="submit">{{ submit_label }}</button>
+    </div>
+  </form>
+</section>
+{% endblock %}
